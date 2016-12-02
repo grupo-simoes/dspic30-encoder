@@ -8,7 +8,6 @@
 
 void initEncoder()
 {
-  //ADPCFG |= 0x0038; // Configure QEI pins as digital inputs
   QEICONbits.QEIM = 0; // Disable QEI Module
   QEICONbits.CNTERR = 0; // Clear any count errors
   QEICONbits.QEISIDL = 0; // Continue operation during sleep
@@ -21,7 +20,7 @@ void initEncoder()
   //DFLTCONbits.INDOUT = 1; // Digital filter output enabled for Index pin
   //DFLTCONbits.INDCK = 5; // 1:64 clock divide for digital filter for Index
   POSCNT = 0; // Reset position counter
-  QEICONbits.QEIM = 6; // X4 mode with position counter reset by Index
+  QEICONbits.QEIM = 5; // X2 mode with position counter reset by MAXCNT
   
 }
 
