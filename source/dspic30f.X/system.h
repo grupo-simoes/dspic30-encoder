@@ -13,6 +13,7 @@ extern "C" {
 #endif
  
 #define     FCY     10000000
+    void initSistema();
 
 #ifdef	__cplusplus
 }

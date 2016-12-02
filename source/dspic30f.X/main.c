@@ -12,6 +12,7 @@
 
 #include "system.h"
 #include "uart.h"
+#include "encoder.h"
 
 #pragma config BWRP = BWRP_OFF          // Boot Segment Write Protect (Boot Segment may be written)
 #pragma config BSS = NO_BOOT_CODE       // Boot Segment Program Flash Code Protection (No Boot Segment)
@@ -29,9 +30,19 @@
 #pragma config FPWRT = PWRT_OFF         // POR Timer Value (Off)
 #pragma config ICS = ICS_PGD            // Comm Channel Select (Use PGC/EMUC and PGD/EMUD)
 
+void __attribute__((interrupt, auto_psv)) _U1RXInterrupt(void)
+{
+  if (IFS0bits.U1RXIF && IEC0bits.U1RXIE)
+  {
+    IFS0bits.U1RXIF=0;
+  }
+}
+
 int main ()
 {
-  
+  initSistema ();
+  initUART1 ();
+    
   while(1)
     {
       
@@ -39,4 +50,3 @@ int main ()
   
   return 0;
 }
-
