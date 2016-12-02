@@ -4,8 +4,7 @@
  *
  * Created on December 2, 2016, 11:32 AM
  */
-
-#include <p30F1010.h>
+#include <p30F4011.h>
 #include <libpic30.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,21 +13,28 @@
 #include "uart.h"
 #include "encoder.h"
 
-#pragma config BWRP = BWRP_OFF          // Boot Segment Write Protect (Boot Segment may be written)
-#pragma config BSS = NO_BOOT_CODE       // Boot Segment Program Flash Code Protection (No Boot Segment)
-#pragma config GWRP = GWRP_OFF          // General Code Segment Write Protect (General Segment may be written)
-#pragma config GSS = GSS_OFF            // General Segment Code Protection (Disabled)
-#pragma config FNOSC = PRIOSC           // Oscillator Mode (Primary Oscillator (HS, EC))
-#pragma config POSCMD = HS              // Primary Oscillator Source (HS Oscillator Mode)
-#pragma config OSCIOFNC = OSC2_CLKO     // OSCI/OSCO Pin Function (OSCO pin has clock out function)
-#pragma config FRANGE = FRC_HI_RANGE    // Frequency Range Select (High Range)
-#pragma config FCKSM = CSW_FSCM_OFF     // Clock Switching and Monitor (Sw Disabled, Mon Disabled)
-#pragma config WDTPS = WDTPOST_PS32768  // Watchdog Timer Postscaler (1:32,768)
-#pragma config FWPSA0 = WDTPRE_PR128    // WDT Prescaler (1:128)
-#pragma config WWDTEN = WINDIS_OFF      // Watchdog Timer Window (Non-Window mode)
-#pragma config FWDTEN = FWDTEN_OFF      // Watchdog Timer Enable (Disable)
-#pragma config FPWRT = PWRT_OFF         // POR Timer Value (Off)
-#pragma config ICS = ICS_PGD            // Comm Channel Select (Use PGC/EMUC and PGD/EMUD)
+// FOSC
+#pragma config FPR = XT_PLL8            // Primary Oscillator Mode (XT w/PLL 8x)
+#pragma config FOS = PRI                // Oscillator Source (Primary Oscillator)
+#pragma config FCKSMEN = CSW_FSCM_OFF   // Clock Switching and Monitor (Sw Disabled, Mon Disabled)
+// FWDT
+#pragma config FWPSB = WDTPSB_16        // WDT Prescaler B (1:16)
+#pragma config FWPSA = WDTPSA_512       // WDT Prescaler A (1:512)
+#pragma config WDT = WDT_OFF            // Watchdog Timer (Disabled)
+// FBORPOR
+#pragma config FPWRT = PWRT_64          // POR Timer Value (64ms)
+#pragma config BODENV = BORV20          // Brown Out Voltage (Reserved)
+#pragma config BOREN = PBOR_ON          // PBOR Enable (Enabled)
+#pragma config LPOL = PWMxL_ACT_LO      // Low-side PWM Output Polarity (Active Low)
+#pragma config HPOL = PWMxH_ACT_LO      // High-side PWM Output Polarity (Active Low)
+#pragma config PWMPIN = RST_IOPIN       // PWM Output Pin Reset (Control with PORT/TRIS regs)
+#pragma config MCLRE = MCLR_EN          // Master Clear Enable (Enabled)
+// FGS
+#pragma config GWRP = GWRP_OFF          // General Code Segment Write Protect (Disabled)
+#pragma config GCP = CODE_PROT_OFF      // General Segment Code Protection (Disabled)
+// FICD
+#pragma config ICS = ICS_PGD3           // Comm Channel Select (Use EMUC3 and EMUD3)
+
 
 void __attribute__((interrupt, auto_psv)) _U1RXInterrupt(void)
 {
@@ -38,14 +44,16 @@ void __attribute__((interrupt, auto_psv)) _U1RXInterrupt(void)
   }
 }
 
-int main ()
-{
+int main (){
   initSistema ();
   initUART1 ();
+  initEncoder ();
     
+  char buffer[10];
   while(1)
     {
-      
+      sprintf (buffer,"%d\r",readEncoder ());
+      sendStringUART1 (buffer);
     }
   
   return 0;
